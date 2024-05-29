@@ -27,6 +27,10 @@ class _ExpensesState extends State<Expenses> {
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
+      /// When useSafeArea is set to true, the modal bottom sheet will respect the safe areas 
+      /// of the screen, avoiding overlap with system UI elements like the status bar, notch, or 
+      /// navigation bar. This ensures that the content is displayed within the visible area of the screen.
+      useSafeArea: true,
       /// here, when isScrollControlled is set to true, the modal overlay will actually take the
       /// full available height and therefore, ensure that, we dont overlap any inputs with keyboard.
       isScrollControlled: true,
@@ -48,8 +52,9 @@ class _ExpensesState extends State<Expenses> {
       _registeredExpenses.remove(expense);
     });
 
-    ScaffoldMessenger.of(context).clearSnackBars(); // to remove old snack bar before showing another, then show new one 
-    
+    ScaffoldMessenger.of(context)
+        .clearSnackBars(); // to remove old snack bar before showing another, then show new one
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 3),
@@ -68,6 +73,7 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceWidth = MediaQuery.of(context).size.width;
     Widget mainContent =
         const Center(child: Text('No expenses found. Start adding some!'));
 
@@ -86,14 +92,27 @@ class _ExpensesState extends State<Expenses> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Chart(expenses: _registeredExpenses),
-          Expanded(
-            child: mainContent,
-          ),
-        ],
-      ),
+      body: deviceWidth < 600
+          ? Column(
+              children: [
+                Chart(expenses: _registeredExpenses),
+                Expanded(
+                  child: mainContent,
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                /// Expanded constraints the child (i.e., Chart) to only take as much width as
+                /// available in the Row after sizing the other Row children.
+                Expanded(
+                  child: Chart(expenses: _registeredExpenses),
+                ),
+                Expanded(
+                  child: mainContent,
+                ),
+              ],
+            ),
     );
   }
 }

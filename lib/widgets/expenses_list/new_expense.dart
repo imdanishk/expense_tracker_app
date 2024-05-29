@@ -63,7 +63,7 @@ class _NewExpenseState extends State<NewExpense> {
       ),
     );
 
-    Navigator.pop(context); 
+    Navigator.pop(context);
   }
 
   /// "dispose", like "initState" and "build", is part of a StatefulWidget's lifecycle.
@@ -79,87 +79,192 @@ class _NewExpenseState extends State<NewExpense> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
-      child: Column(
-        children: [
-          TextField(
-            controller: _titleController,
-            maxLength: 50,
-            decoration: const InputDecoration(label: Text('Title')),
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _amountController,
-                  decoration: const InputDecoration(
-                    prefixText: '\$ ',
-                    label: Text('Amount'),
-                  ),
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(_selectedDate == null
-                        ? 'No date selected'
-                        : formatter.format(_selectedDate!)),
-                    IconButton(
-                      onPressed: _openDatePicker,
-                      icon: const Icon(Icons.calendar_month),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              DropdownButton(
-                value: _selectedCategory,
-                items: Category.values
-                    .map(
-                      (category) => DropdownMenuItem(
-                        value: category,
-                        child: Text(category.name.toUpperCase()),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value == null) {
-                    return;
-                  }
+    /// viewInsets is an object that contains extra info about UI elements
+    /// that might be overlapping certain parts of the UI.
+    /// For example, if we access viewInsets.bottom, we get an extra UI elements
+    /// that are overlapping the UI from the bottom.
+    final keyboardSpace = MediaQuery.of(context).viewInsets.bottom;
 
-                  // this code only executes if value is not null because if we return in a
-                  // function, no code thereafter will be executed.
-                  // A return statement is always the last code that will be executed.
-                  // So, therefore, if we return above, and if the value is null, this
-                  // below code will not be executed.
-                  setState(() {
-                    _selectedCategory = value;
-                  });
-                },
-              ),
-              const Spacer(),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: _submitExpenseData,
-                child: const Text('Save expense'),
-              )
-            ],
-          )
-        ],
-      ),
-    );
+    return LayoutBuilder(builder: (ctx, constraints) {
+      final width = constraints.maxWidth;
+
+      return SizedBox(
+        height: double.infinity,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16, 16, 16, keyboardSpace + 16),
+            child: Column(
+              children: [
+                if (width >= 600)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _titleController,
+                          maxLength: 50,
+                          decoration:
+                              const InputDecoration(label: Text('Title')),
+                        ),
+                      ),
+                      const SizedBox(width: 24),
+                      Expanded(
+                        child: TextField(
+                          controller: _amountController,
+                          decoration: const InputDecoration(
+                            prefixText: '\$ ',
+                            label: Text('Amount'),
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  TextField(
+                    controller: _titleController,
+                    maxLength: 50,
+                    decoration: const InputDecoration(label: Text('Title')),
+                  ),
+                if (width >= 600)
+                  Row(
+                    children: [
+                      DropdownButton(
+                        value: _selectedCategory,
+                        items: Category.values
+                            .map(
+                              (category) => DropdownMenuItem(
+                                value: category,
+                                child: Text(category.name.toUpperCase()),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          if (value == null) {
+                            return;
+                          }
+
+                          // this code only executes if value is not null because if we return in a
+                          // function, no code thereafter will be executed.
+                          // A return statement is always the last code that will be executed.
+                          // So, therefore, if we return above, and if the value is null, this
+                          // below code will not be executed.
+                          setState(() {
+                            _selectedCategory = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(width: 24),
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(_selectedDate == null
+                                ? 'No date selected'
+                                : formatter.format(_selectedDate!)),
+                            IconButton(
+                              onPressed: _openDatePicker,
+                              icon: const Icon(Icons.calendar_month),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _amountController,
+                          decoration: const InputDecoration(
+                            prefixText: '\$ ',
+                            label: Text('Amount'),
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(_selectedDate == null
+                                ? 'No date selected'
+                                : formatter.format(_selectedDate!)),
+                            IconButton(
+                              onPressed: _openDatePicker,
+                              icon: const Icon(Icons.calendar_month),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                const SizedBox(height: 16),
+                if (width >= 600)
+                  Row(
+                    children: [
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancel'),
+                      ),
+                      ElevatedButton(
+                        onPressed: _submitExpenseData,
+                        child: const Text('Save expense'),
+                      )
+                    ],
+                  )
+                else
+                  Row(
+                    children: [
+                      DropdownButton(
+                        value: _selectedCategory,
+                        items: Category.values
+                            .map(
+                              (category) => DropdownMenuItem(
+                                value: category,
+                                child: Text(category.name.toUpperCase()),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          if (value == null) {
+                            return;
+                          }
+
+                          // this code only executes if value is not null because if we return in a
+                          // function, no code thereafter will be executed.
+                          // A return statement is always the last code that will be executed.
+                          // So, therefore, if we return above, and if the value is null, this
+                          // below code will not be executed.
+                          setState(() {
+                            _selectedCategory = value;
+                          });
+                        },
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancel'),
+                      ),
+                      ElevatedButton(
+                        onPressed: _submitExpenseData,
+                        child: const Text('Save expense'),
+                      )
+                    ],
+                  )
+              ],
+            ),
+          ),
+        ),
+      );
+    });
   }
 }

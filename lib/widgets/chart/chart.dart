@@ -7,6 +7,7 @@ class Chart extends StatelessWidget {
 
   final List<Expense> expenses;
 
+  // Create buckets for each category
   List<ExpenseBucket> get buckets {
     return [
       ExpenseBucket.forCategory(expenses, Category.food),
@@ -16,6 +17,7 @@ class Chart extends StatelessWidget {
     ];
   }
 
+  // Get the maximum total expense in any category
   double get maxTotalExpense {
     double maxTotalExpense = 0;
 
@@ -30,6 +32,7 @@ class Chart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Check if the app is in dark mode
     final isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Container(
@@ -57,6 +60,7 @@ class Chart extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                // Create a chart bar for each bucket
                 for (final bucket in buckets) // alternative to map()
                   ChartBar(
                     fill: bucket.totalExpenses == 0
@@ -67,8 +71,9 @@ class Chart extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
+          // Show icons for each category
           Row(
-            children: buckets
+            children: buckets // here, we can alternatively use for..in as above 
                 .map(
                   (bucket) => Expanded(
                     child: Padding(
